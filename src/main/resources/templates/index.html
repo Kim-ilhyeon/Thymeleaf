@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Thymeleaf</title>
+</head>
+
+<body>
+	<h1>Template Engine :: Thymeleaf</h1>
+
+	<h2>1. Thymeleaf란?</h2>
+	<p>
+		Thymeleaf는 spring boot에서 권장하는 템플릿 엔진 중 하나로
+		html 파일 내에서 Java객체를 직접 출력하거나
+		제어문 (조건문, 반복문)을 사용할 수 있게해주는 엔진이다.
+
+		<br><br>
+
+		JSP처럼 서버 데이터를 표현할 수 있지만,
+		HTML에 친화적이므로 브라우저에서도 꺠지지 않고 잘 표시되며
+		문법이 직관적이다.
+	</p>
+
+	<h2>2. Thymeleaf 문법</h2>
+	<h3>1) 데이터 접근</h3>
+	<ol>
+		<li>
+			<code>${x}</code> : Model(request영역)에 저장된 데이터에 접근 <br>
+			ex) model.addAttribute("x", data);
+		</li><br>
+		<li>
+			<code>${param.x}</code> : HTTP 요청 파라미터 데이터에 접근 <br>
+			ex) url?x=data
+		</li><br>
+		<li>
+			<code>${session.x}</code> : 세션(session)영역에 저장된 데이터에 접근 <br>
+			ex) session.setAttribute("x", data);
+		</li><br>
+		<li>
+			<code>${application.x}</code> : 어플리케이션(application)영역에 저장된 데이터에 접근 <br>
+			ex) application.setAttribute("x", data);
+		</li><br>
+	</ol>
+
+	<h3>2) 데이터 표현</h3>
+	<ol>
+		<li>
+			<code>${x}</code> : 변수 참조
+		</li><br>
+		<li>
+			<code>*{x}</code> : th:object로 바인딩된 객체의 속성에 접근 <br>
+			ex) 주로 form태그에서 사용 <br>
+			&lt;form th:object="${user}"> <br>
+
+			&lt;input type="text" name="userId" th:field="*{id}"/> <br>
+			&lt;input type="text" name="userPwd" th:field="*{pwd}"/> <br>
+
+			&lt;/form>
+		</li><br>
+		<li>
+			<code>#{x}</code> : 메시지를 표현 <br>
+			- 고정 텍스트 또는 다국어 처리(i18n) 시 사용. <br>
+			- messages.properties 파일에 설정된 데이터를 가져와 사용한다. <br>
+			ex) messages_en.properties, messages_ko.properties, messages_jp.properties
+		</li><br>
+		<li>
+			<code>@{x}</code> : URL 링크 표현 <br>
+			ex) 동적인 링크 생성 시 사용 <br>
+			&lt;a th:href="@{/product/detail( id=${product.id} )}">상세 보기&lt;/a>
+		</li><br>
+		<li>
+			<code>~{x}</code> : Fragment 표현 <br>
+			<ul>
+				<li>
+					* Fragment 정의 : th:fragment="이름"
+				</li> <br>
+				<li>
+					th:include (대상 템플릿의 내용만 포함)
+
+					<div th:include="~{fragments/test :: header}" 
+						style="color: orange; border: solid 1px orange;"></div>
+
+				</li> <br>
+				<li>
+					th:insert (대상 템플릿을 삽입)
+
+					<div th:insert="~{fragments/test :: header}" 
+						style="color: orange; border: solid 1px orange;"></div>
+
+				</li> <br>
+				<li>
+					th:replace (대상 템플릿으로 대체)
+
+					<div th:replace="~{fragments/test :: header}" 
+						style="color: orange; border: solid 1px orange;"></div>
+
+				</li>
+			</ul>
+		</li><br>
+	</ol>
+
+	<h3>3) 변수(데이터) 출력</h3>
+	<ul>
+		<li>
+			<code>th:text="${변수}"</code> : 일반 요소의 텍스트 출력 <br>
+		</li>
+		<li>
+			<code>th:value="${변수}"</code> : 입력 요소의 텍스트(value값) 출력 <br>
+			* textarea 의 경우 th:text 사용해야함!!
+		</li>
+	</ul>
+	<pre>
+		&lt;span th:text="${post.title}">제목&lt;/span>
+
+		&lt;input type="text" value="제목" th:value="${post.title}"/>
+	</pre>
+	<h3>4) 텍스트 출력</h3>
+	<!-- th:inline="none" (타임리프가 인라인 표현식을 해석하지 못하게 설정) -->
+	<!-- <ul th:inline="none"> -->
+		<li>
+			<code>[[ ${변수} ]]</code> : 텍스트 그대로 출력 
+		</li>
+		<li>
+			<code>[[${변수}]]</code> : 텍스트 그대로 출력 
+		</li>
+		<li>
+			<code>[(${변수})]</code> : HTML 요소가 있는 경우 해석해서 출력
+		</li>
+	</ul>
+	
+	<h3>5) 조건</h3>
+	<p>
+		<code>th:if</code>, <code>th:unless</code> : 조건에 따라 출력 ( if => 조건에 참일 때 / unless => 조건이 거짓일 때)
+	</p>
+	&lt;div th:if="${session.loginUser != null}">xxx 사용자 접속&lt;/div> <br>
+	&lt;div th:unless="${session.loginUser}">로그인이 필요합니다.&lt;/div> <br>
+
+	<h3>6) 반복문</h3>
+
+	<p th:inline="none">
+		<code>th:each="변수명 : ${#numbers.sequence(시작번호, 끝번호[,증가값])}"</code>
+	</p>
+	<div th:each="num : ${#numbers.sequence(1, 5)}">
+		<span th:text="${num}"></span>
+	</div>
+
+	<table>
+		<tr th:each="num : ${data}">
+			<td th:text="${num}"></td>
+			<td th:text="${num*10}"></td>
+		</tr>
+	</table>
+	<p>
+		<code>th:each="변수명 : ${리스트}"</code> : 리스트를 순차적으로 반복
+	</p>
+	&lt;table>
+		&lt;tr th:each="product : ${productList}"> <br>
+			&lt;td th:text="${product.name}">제품명&lt;/td> <br>
+			&lt;td th:text="${product.price}">가격&lt;/td> <br>
+		&lt;/tr>
+	&lt;/table>
+
+	<h3>7) 날짜 포맷</h3>
+	<p>
+		<code>#dates.format(날짜, 형식)</code>
+	</p>
+	&lt;span th:text="${#dates.format(product.createDate, 'yyyy-MM-dd')}">여기에 날짜를 표시합니다.&lt;/span> <br>
+
+	<h3>8) 그 외의 표현식</h3>
+	<ul>
+		<li>
+			<code>${#lists.size(리스트)}</code> : 리스트 길이
+		</li>
+		<li>
+			<code>${#strings.substring(문자열, 시작위치, 끝위치)}</code> : 시작위치부터 끝위치까지 문자열 자르기
+		</li>
+		<li>
+			<code>${#dates.createNow()}</code> : 현재 시간
+		</li>
+	</ul>
+
+	<!-- 현재 시간 정보를 "2025-04-17 16:09:30" 형식으로 출력 -->
+	<span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd hh:mm:ss')}">현재시간</span>
+
+	<br><br>
+
+	<h2>3. 연습하기</h2>
+	<a href="/go">페이지 이동</a>
+	<a th:href="@{/go}">페이지 이동2</a>
+	<!-- @{URL주소} 사용 시 context-path를 자동으로 붙여줌! -->
+
+	<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+
+</html>

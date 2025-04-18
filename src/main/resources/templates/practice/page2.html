@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Page</title>
+    <link rel="stylesheet" th:href="@{/css/page2.css}">
+</head>
+
+<body>
+    <h1>Page2</h1>
+
+    <p>
+        정적 파일 (js, css, image, ...) 들은 classpath(src/main/resources) 경로의 static폴더에서 관리한다.
+    </p>
+
+    <p>
+        <span th:text="'이름 : ' + ${p.name}"></span> <br>
+        <span th:text="'나이 : ' + ${p.age}"></span> <br>
+        <span th:text="'생년월일 : ' + ${p.birth}"></span> <br>
+
+        <br>
+
+        취미 :
+        <!-- 취미정보가 있을 경우 데이터를 화면에 표시 -->
+        <!-- 취미정보가 없을 경우 "없음" 표시 -->
+    <table th:if="${p.hobby != null}">
+        <tr th:each="p : ${p.hobby}">
+            <td th:text="${p}"></td>
+        </tr>
+    </table>
+
+    <!-- <span th:if="${p.hobby != null}" th:text="${p.hobby + ''}"></span>
+    <div th:each="p : ${p.hobby}">
+        <span th:if="${p.hobby != null}" th:text="${p.hobby + ''}"></span>
+    </div> -->
+    <span th:unless="${p.hobby}">없음</span>
+    </p>
+
+    <hr>
+
+    <h2>세션 영역에 저장된 데이터</h2>
+    <p>
+        <span th:text="${session.user.name}"></span>님 반갑습니다.^^
+    </p>
+
+    <h2>회원목록 (객체 리스트로 request영역에 저장된 데이터)</h2>
+    <table border="1">
+        <tr>
+            <th>이름</th>
+            <th>나이</th>
+            <th>생년월일</th>
+        </tr>
+        <!-- "personList" 키값으로 저장된 회원 목록을 표시 -->
+        <tr th:each="pList : ${personList}" style="background-color: beige;">
+            <td th:text="${pList.name}">이름</td>
+            <td th:text="${pList.age}">나이</td>
+            <td th:text="${pList.birth}">생년월일</td>
+        </tr>
+
+        <tr th:each="pList : ${personList}" th:object="${pList}">
+            <td th:text="*{name}"></td>
+            <td th:text="*{age}"></td>
+            <td th:text="*{birth}"></td>
+        </tr>
+    </table>
+
+
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 1</title>
+</head>
+<body>
+    <h1>Page1</h1>
+
+    <h3>
+        classpath(src/main/resources) 경로의 templates 폴더에서 템플릿 파일(응답 화면)들을 관리한다.
+    </h3>
+
+    <form action="add" method="post">
+        <input type="text" name="name" placeholder="이름 입력"/> <br>
+        <input type="number" name="age" value="20"/> <br>
+        <input type="date" name="birth" title="생년월일"/> <br>
+
+        <input type="checkbox" name="hobby" value="등산"/> 등산
+        <input type="checkbox" name="hobby" value="독서"/> 독서
+        <input type="checkbox" name="hobby" value="영화감상"/> 영화감상
+
+        <input type="submit" value="전송"/>
+
+    </form>
+
+
+
+
+</body>
+</html>
